@@ -29,13 +29,15 @@ func main() {
 			fmt.Printf(err.Error())
 		}
 
-		sheet1 := excel.Sheets[0]
-
 		r := Row{}
-		r.Name = strings.ReplaceAll(sheet1.Rows[10].Cells[2].Value, "\n", "")
-		r.Type = strings.ReplaceAll(sheet1.Rows[10].Cells[4].Value, "\n", "")
-		r.Quantity = sheet1.Rows[10].Cells[6].Value
-		r.Maker = strings.ReplaceAll(sheet1.Rows[10].Cells[10].Value, "\n", "")
-		fmt.Println(r)
+		for _, sheet := range excel.Sheets {
+			for _, row := range sheet.Rows {
+				r.Name = strings.ReplaceAll(row.Cells[2].Value, "\n", "")
+				r.Type = strings.ReplaceAll(row.Cells[4].Value, "\n", "")
+				r.Quantity = row.Cells[6].Value
+				r.Maker = strings.ReplaceAll(row.Cells[10].Value, "\n", "")
+				fmt.Println(r)
+			}
+		}
 	}
 }
