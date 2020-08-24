@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/tealeg/xlsx"
@@ -63,7 +66,12 @@ Usage:
 	}
 
 	// Main
-	for _, file := range flag.Args() {
+	paths, err := parseStarPath(flag.Args())
+	if err != nil {
+		log.Fatalf("error: %v", err)
+		os.Exit(1)
+	}
+	for _, file := range paths {
 		excel, err := xlsx.OpenFile(file)
 		if err != nil {
 			fmt.Printf(err.Error())
@@ -114,4 +122,18 @@ Usage:
 			}
 		}
 	}
+}
+
+// parseStarPath parsing "*" containing path forcibly
+// For windows cmd bug, *.txt couldn't parse
+// so, using `filepath.Glob()` makes parsing "*"
+// as same as Linux shell.
+func parseStarPath(ss []string) ([]string, error) {
+	for _, p := range ss {
+		if strings.Contains(p, "*") {
+			paths, err := filepath.Glob(p)
+			return paths, err
+		}
+	}
+	return ss, nil
 }
