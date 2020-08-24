@@ -38,11 +38,13 @@ func main() {
 	flag.BoolVar(&showHelp, "help", false, "show help")
 	flag.Parse()
 
+	// Show Version
 	if showVersion {
 		fmt.Println("plst version:", VERSION)
 		return // versionを表示して終了
 	}
 
+	// Show Help
 	if showHelp {
 		fmt.Println(`
 部品諸元表( .xlsx形式 )から、[ 品名, 型式, 数量, メーカ ] を抜き出します。
@@ -60,6 +62,7 @@ Usage:
 		return // helpを表示して終了
 	}
 
+	// Main
 	for _, file := range flag.Args() {
 		excel, err := xlsx.OpenFile(file)
 		if err != nil {
@@ -78,6 +81,10 @@ Usage:
 					continue
 				}
 				if name == "" || skip { // 品名が空なら次の行へ
+					continue
+				}
+
+				if strings.HasPrefix(strings.Join(strings.Fields(name), ""), "欠番") { // 欠番で始まるとき
 					continue
 				}
 
