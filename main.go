@@ -8,6 +8,16 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
+const (
+	// VERSION plst version
+	VERSION = "v0.1.0"
+)
+
+var (
+	showVersion bool
+	showHelp    bool
+)
+
 // Row is a line of CSV
 type Row struct {
 	Name     string
@@ -22,7 +32,34 @@ func (r Row) String() string {
 }
 
 func main() {
+	flag.BoolVar(&showVersion, "v", false, "show version")
+	flag.BoolVar(&showVersion, "version", false, "show version")
+	flag.BoolVar(&showHelp, "h", false, "show help")
+	flag.BoolVar(&showHelp, "help", false, "show help")
 	flag.Parse()
+
+	if showVersion {
+		fmt.Println("plst version:", VERSION)
+		return // versionを表示して終了
+	}
+
+	if showHelp {
+		fmt.Println(`
+部品諸元表( .xlsx形式 )から、[ 品名, 型式, 数量, メーカ ] を抜き出します。
+
+Usage:
+	# 品名、型式、数量、メーカをSK553808.csvに保存
+	$ plst SK553808_同調増幅回路_VLFANT01_部品諸元表.xlsx > SK553808.csv
+
+	# 品名、型式、数量、メーカを標準出力に表示
+	$ plst SK553808_同調増幅回路_VLFANT01_部品諸元表.xlsx | column -s, -t
+
+	# 複数の部品諸元表から品名、型式、数量、メーカを標準出力に表示
+	$ plst *.xlsx | column -s, -t
+		`)
+		return // helpを表示して終了
+	}
+
 	for _, file := range flag.Args() {
 		excel, err := xlsx.OpenFile(file)
 		if err != nil {
